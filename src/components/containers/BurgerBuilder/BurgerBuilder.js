@@ -17,11 +17,11 @@ class BurgerBuilder extends Component{
             meat: 0
 
         },
-        totalPrice: 0,
+        totalPrice: 4,
         purchasable: false
     }
 
-    updatePurchaseState = (ingredients) => {
+    updatePurchaseState (ingredients) {
 
         const sum = Object.keys(ingredients).reduce( (sum, cur) => sum + cur, 0);
 
