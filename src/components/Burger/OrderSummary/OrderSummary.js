@@ -3,7 +3,9 @@ import React from 'react';
 const orderSummary = (props) => {
     const ingredientSummary = Object.keys(props.ingredients)
             .map(igKey => {
-                return <li> <span syle={{textTransform: 'capitalize'}}>{igKey}</span>: {props.ingredients[igKey]}</li>
+                return <li key ={igKey}> 
+                    <span syle={{textTransform: 'capitalize'}}>{igKey}</span>: {props.ingredients[igKey]}
+                    </li>
             });
 
 
@@ -14,6 +16,7 @@ const orderSummary = (props) => {
             <ul>
                 {ingredientSummary}
             </ul>
+            <p>Total: ${props.price.toFixed(2)}</p>
         </>
     )
 };
