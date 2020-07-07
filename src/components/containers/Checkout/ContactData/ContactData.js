@@ -7,13 +7,92 @@ import Input from '../../../UI/Input/Input';
 class ContactData extends Component {
 
     state= {
-        name: '',
-        email: '',
-        address : {
+        orderForm: {
+            name: {
+                elementType: 'input',
+                elementConfig: {
+                    type:'text',
+                    placeholder: 'Your Name'
+                },
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
 
-            street: '',
-            postalCode: '',
+            },
+            street: {
+                elementType: 'input',
+                elementConfig: {
+                    type:'text',
+                    placeholder: 'Street'
+                },
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
+
+            },
+            zipCode:{
+                elementType: 'input',
+                elementConfig: {
+                    type:'text',
+                    placeholder: 'ZIPCODE'
+                },
+                value: '',
+                validation: {
+                    required: true,
+                    minLength: 5,
+                    maxLength: 5
+                },
+                valid: false,
+                touched: false
+
+            },
+            country: {
+                elementType: 'input',
+                elementConfig: {
+                    type:'text',
+                    placeholder: 'Country'
+                },
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
+
+            },
+            email: {
+                elementType: 'input',
+                elementConfig: {
+                    type:'email',
+                    placeholder: 'Your E-Mail'
+                },
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
+
+            },
+            deliveryMethod: {
+                elementType: 'select',
+                elementConfig: {
+                    options: [
+                        {value: 'fastest', displayValue: 'Fastest'},
+                        {value: 'cheapest', displayValue: 'Cheapest'}
+                    ]
+                },
+                value: 'fastest',
+
+            }
         },
+
         loading: false
 
     }
@@ -22,22 +101,14 @@ class ContactData extends Component {
         event.preventDefault();
 
         this.setState({loading: true})
-
+        const formData = {};
+        for(let formElementIdentifier in this.state.orderForm){
+            formData[formElementIdentifier] = this.state.orderForm[formElementIdentifier].value;
+        }
         const order = {
             ingredients: this.props.ingredients,
             price: this.props.price,
-            customer: {
-                name: 'Andres Medrano',
-                address: {
-                    street: '242 brewster ave',
-                    zipCode: '342134',
-                    country: 'USA'
-                },
-                email: 'test@email.com'
-            },
-
-            deliveryMethod: 'fastest'
-
+            orderData: formData
         }
 
 
@@ -51,14 +122,66 @@ class ContactData extends Component {
             });
 
     }
+
+    checkValidity(value, rules) {
+
+        let isValid = true;
+
+        if(rules.required) {
+            isValid = value.trim() !== '' && isValid;
+        }
+
+        if(rules.minLength){
+            isValid = value.length >=rules.minLength && isValid;
+        }
+        if(rules.maxLength){
+            isValid = value.length <=rules.maxLength && isValid;
+        }
+
+        return isValid
+    }
+
+    inputChangedHandler = (event, inputIdentifyer) => {
+        console.log(event.target.value)
+        const updatedOrderForm = {
+            ...this.state.orderForm
+        }
+        const updatedFormElement = {
+            ...updatedOrderForm[inputIdentifyer]
+        }
+
+        updatedFormElement.value = event.target.value;
+        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation)
+        updatedFormElement.touched = true;
+        console.log(updatedFormElement);
+        updatedOrderForm[inputIdentifyer] = updatedFormElement;
+
+        this.setState({orderForm: updatedOrderForm})
+    }
+
+
     render(){
+        const formElementArray = [];
+        for(let key in this.state.orderForm){
+            formElementArray.push({
+                id: key,
+                config: this.state.orderForm[key]
+            })
+        }
 
         let form = (
-            <form >
-                <Input inputtype='input' type="text" name ='name' placeholder='Your Name' />
-                <Input inputtype='input' type="email" name ='email' placeholder='Your Email' />
-                <Input inputtype='input' type="text" name ='street' placeholder='Street' />
-                <Input inputtype='input' type="text" name ='postal' placeholder='Postal Code' />
+            <form onSubmit={this.orderHandler} >
+               {formElementArray.map(formElement => (
+                   <Input 
+                        key={formElement.id}
+                        elementType = {formElement.config.elementType}
+                        elementConfig ={formElement.config.elementConfig}
+                        value = {formElement.config.value}
+                        invalid={!formElement.config.valid}
+                        shouldValidate={formElement.config.validation}
+                        touched={formElement.config.touched}
+                        changed={(event) => this.inputChangedHandler(event, formElement.id)}/>
+               ))}
                 <Button btnType = "Success" clicked={this.orderHandler}>ORDER</Button>
             </form>
         )
