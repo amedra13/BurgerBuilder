@@ -4,6 +4,7 @@ import Input from '../../UI/Input/Input';
 import Button from '../../UI/Button/Button';
 import classes from './Auth.module.css';
 import * as actions from '../../../store/actions/index';
+import Spinner from '../../UI/Spinner/Spinner';
 
 class Auth extends Component {
 
@@ -97,7 +98,7 @@ class Auth extends Component {
             })
         }
 
-        const form = formElementArray.map(formElement => (
+        let form = formElementArray.map(formElement => (
             <Input 
                  key={formElement.id}
                  elementType = {formElement.config.elementType}
@@ -109,8 +110,21 @@ class Auth extends Component {
                  changed={(event) => this.inputChangedHandler(event, formElement.id)}/>
         ))
 
+        if(this.props.loading) {
+            form = <Spinner />
+        }
+
+        let errorMessage = null
+
+        if(this.props.error){
+            errorMessage = (
+                <p>{this.props.error.message}</p>
+            )
+        }
+
         return (
             <div className={classes.Auth}>
+                {errorMessage}
                 <form onSubmit={this.submitHandler}>
                     {form}
                     <Button btnType='Success'>Submit</Button>
@@ -123,10 +137,17 @@ class Auth extends Component {
     }
 }
 
+const mapStateToProps = (state) => {
+    return{
+        loading: state.auth.loading,
+        error: state.auth.error
+    }
+}
+
 const mapDispatchToProps = dispatch => {
     return {
         onAuth: (email,password, isSignUp) => dispatch(actions.auth(email,password, isSignUp))
     }
 }
 
-export default connect(null, mapDispatchToProps)(Auth);
+export default connect(mapStateToProps, mapDispatchToProps)(Auth);
