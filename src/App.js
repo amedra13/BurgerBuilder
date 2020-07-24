@@ -6,7 +6,7 @@ import Checkout from './components/containers/Checkout/Checkout';
 import Orders from './components/containers/Orders/Orders';
 import Auth from './components/containers/Auth/Auth';
 import Logout from './components/containers/Auth/Logout/logout';
-import { Route , Switch} from 'react-router-dom';
+import { Route , Switch, withRouter} from 'react-router-dom';
 import * as actions from './store/actions/index';
 
 class App extends Component{
@@ -41,4 +41,4 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-export default connect(null,mapDispatchToProps)(App);
+export default withRouter(connect(null,mapDispatchToProps)(App));
